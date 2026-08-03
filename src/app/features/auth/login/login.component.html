@@ -1,0 +1,42 @@
+<div class="login">
+  <div class="login__card">
+    <a routerLink="/" class="login__logo">Aurelia Motors</a>
+
+    <h1>Entrar na sua conta</h1>
+    <p class="login__subtitle">Acesse o painel para gerenciar clientes, veículos e vendas.</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="seuemail@aureliamotors.com.br"
+        [class.input--erro]="emailInvalido"
+      />
+      @if (emailInvalido) {
+        <p class="campo-erro">Informe um e-mail válido.</p>
+      }
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        formControlName="senha"
+        placeholder="••••••••"
+        [class.input--erro]="senhaInvalida"
+      />
+      @if (senhaInvalida) {
+        <p class="campo-erro">A senha precisa ter no mínimo 6 caracteres.</p>
+      }
+
+      @if (erro()) {
+        <p class="login__erro-geral">{{ erro() }}</p>
+      }
+
+      <button type="submit" [disabled]="carregando()">
+        {{ carregando() ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</div>

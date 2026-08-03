@@ -1,0 +1,33 @@
+.footer {
+  background: var(--color-ink);
+  padding: 40px 40px 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  color: var(--color-ivory-muted);
+  font-size: 12px;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer address {
+  font-style: normal;
+  line-height: 1.6;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .footer {
+    padding: 32px 20px 20px;
+  }
+
+  .footer address {
+    text-align: left;
+  }
+}

@@ -1,0 +1,47 @@
+<app-header />
+
+<main>
+  <app-hero />
+
+  <section class="showcase">
+    <p class="section-label">Vitrine</p>
+
+    <div class="showcase__grid">
+      @for (veiculo of vitrine; track veiculo.nome) {
+        <article class="showcase__card">
+          <div class="showcase__image"></div>
+          <h3>{{ veiculo.nome }}</h3>
+          <p>{{ veiculo.precoFormatado }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="about">
+    <div>
+      <p class="section-label section-label--dark">Sobre</p>
+      <h2>Trinta anos selecionando veículos que carregam mais do que motor e chassi.</h2>
+    </div>
+    <p class="about__text">
+      Cada unidade passa por inspeção de 120 pontos e vem com garantia estendida
+      e concierge dedicado.
+    </p>
+  </section>
+
+  <section class="services">
+    <div class="services__item">
+      <i class="ti ti-steering-wheel" aria-hidden="true"></i>
+      <p>Test-drive privado</p>
+    </div>
+    <div class="services__item">
+      <i class="ti ti-credit-card" aria-hidden="true"></i>
+      <p>Financiamento sob medida</p>
+    </div>
+    <div class="services__item">
+      <i class="ti ti-truck-delivery" aria-hidden="true"></i>
+      <p>Entrega na sua garagem</p>
+    </div>
+  </section>
+</main>
+
+<app-footer />
