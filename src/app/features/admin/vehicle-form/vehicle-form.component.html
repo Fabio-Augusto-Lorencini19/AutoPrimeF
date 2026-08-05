@@ -1,1 +1,91 @@
-<p>vehicle-form works!</p>
+<app-header />
+
+<main class="form-container">
+  <div class="form-card">
+    <div class="form-card__header">
+      <a routerLink="/" class="back-link">← Voltar para o estoque</a>
+      <h1>{{ modoEdicao() ? 'Editar Veículo' : 'Adicionar Novo Veículo' }}</h1>
+      <p class="form-card__subtitle">
+        {{ modoEdicao() ? 'Atualize as informações do veículo no sistema' : 'Cadastre um novo modelo no estoque da concessionária' }}
+      </p>
+    </div>
+
+    @if (mensagemErro()) {
+      <div class="form-erro-geral">
+        {{ mensagemErro() }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <!-- Marca -->
+        <div class="form-group">
+          <label for="marca">Marca *</label>
+          <input id="marca" type="text" formControlName="marca" placeholder="Ex: Porsche, BMW, Audi" />
+        </div>
+
+        <!-- Modelo -->
+        <div class="form-group">
+          <label for="modelo">Modelo *</label>
+          <input id="modelo" type="text" formControlName="modelo" placeholder="Ex: 911 Carrera S" />
+        </div>
+
+        <!-- Ano -->
+        <div class="form-group">
+          <label for="ano">Ano Fabricação *</label>
+          <input id="ano" type="number" formControlName="ano" placeholder="2024" />
+        </div>
+
+        <!-- Preço -->
+        <div class="form-group">
+          <label for="preco">Preço (R$) *</label>
+          <input id="preco" type="number" formControlName="preco" placeholder="1250000" />
+        </div>
+
+        <!-- Quilometragem -->
+        <div class="form-group">
+          <label for="quilometragem">Quilometragem (KM) *</label>
+          <input id="quilometragem" type="number" formControlName="quilometragem" placeholder="8500" />
+        </div>
+
+        <!-- Chassi -->
+        <div class="form-group">
+          <label for="chassi">Número do Chassi *</label>
+          <input id="chassi" type="text" formControlName="chassi" placeholder="WP0ZZZ99ZPS123456" />
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+          <label for="status">Status do Veículo *</label>
+          <select id="status" formControlName="status">
+            <option value="disponivel">Disponível</option>
+            <option value="reservado">Reservado</option>
+            <option value="vendido">Vendido</option>
+          </select>
+        </div>
+
+        <!-- URL da Imagem -->
+        <div class="form-group form-group--full">
+          <label for="imagemUrl">URL da Imagem *</label>
+          <input id="imagemUrl" type="url" formControlName="imagemUrl" placeholder="https://..." />
+        </div>
+
+        <!-- Descrição -->
+        <div class="form-group form-group--full">
+          <label for="descricao">Descrição / Observações</label>
+          <textarea id="descricao" rows="4" formControlName="descricao" placeholder="Detalhes de acabamento, opcionais e histórico..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/" class="btn-cancelar">Cancelar</a>
+        <button type="submit" [disabled]="salvando()" class="btn-salvar">
+          {{ salvando() ? 'Salvando...' : (modoEdicao() ? 'Salvar Alterações' : 'Cadastrar Veículo') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<app-footer />
+

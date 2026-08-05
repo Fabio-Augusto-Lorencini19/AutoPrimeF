@@ -1,6 +1,6 @@
 <div class="login">
   <div class="login__card">
-    <a routerLink="/" class="login__logo">Aurelia Motors</a>
+    <a routerLink="/" class="login__logo">Auto Prime</a>
 
     <h1>Entrar na sua conta</h1>
     <p class="login__subtitle">Acesse o painel para gerenciar clientes, veículos e vendas.</p>
@@ -11,7 +11,7 @@
         id="email"
         type="email"
         formControlName="email"
-        placeholder="seuemail@aureliamotors.com.br"
+        placeholder="seuemail@autoprime.com.br"
         [class.input--erro]="emailInvalido"
       />
       @if (emailInvalido) {
@@ -38,5 +38,25 @@
         {{ carregando() ? 'Entrando...' : 'Entrar' }}
       </button>
     </form>
+
+    <div class="login__test-accounts">
+      <p class="login__test-title">💡 Contas de Teste Pré-criadas:</p>
+      <div class="login__test-buttons">
+        <button type="button" (click)="preencherCredenciais('gerente@autoprime.com.br', 'gerente123')" class="btn-test btn-test--admin">
+          👑 Gerente (gerente&#64;autoprime.com.br)
+        </button>
+        <button type="button" (click)="preencherCredenciais('vendedor@autoprime.com.br', 'vendedor123')" class="btn-test">
+          💼 Vendedor 1 (vendedor&#64;autoprime.com.br)
+        </button>
+        <button type="button" (click)="preencherCredenciais('joao.vendedor@autoprime.com.br', 'venda123')" class="btn-test">
+          💼 Vendedor 2 (joao.vendedor&#64;autoprime.com.br)
+        </button>
+      </div>
+    </div>
+
+    <p class="login__rodape">
+      Não tem uma conta? <a routerLink="/registro">Criar conta</a>
+    </p>
   </div>
 </div>
+

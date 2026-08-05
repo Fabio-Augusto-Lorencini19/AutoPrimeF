@@ -1,10 +1,24 @@
 <header class="header" [class.header--scrolled]="scrolled()">
-  <a routerLink="/" class="header__logo">Aurelia Motors</a>
+  <a routerLink="/" class="header__logo">AutoPrime</a>
 
   <nav class="header__nav">
     <a routerLink="/veiculos">Estoque</a>
-    <a routerLink="/sobre">Sobre</a>
-    <a routerLink="/contato">Contato</a>
-    <a routerLink="/login" class="header__login">Entrar</a>
+
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin/veiculos/novo" class="header__admin-link">Novo Veículo</a>
+    }
+
+    @if (auth.currentUser(); as usuario) {
+      <div class="header__user-group">
+        <span class="header__user-name">{{ usuario.nome }}</span>
+        <span class="header__badge" [class.header__badge--admin]="auth.isAdmin()">
+          {{ auth.isAdmin() ? 'ADMIN' : 'VENDEDOR' }}
+        </span>
+      </div>
+      <button (click)="logout()" class="header__logout-btn">Sair</button>
+    } @else {
+      <a routerLink="/login" class="header__login">Entrar</a>
+    }
   </nav>
 </header>
+

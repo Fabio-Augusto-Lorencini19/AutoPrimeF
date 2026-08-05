@@ -4,14 +4,60 @@
   <app-hero />
 
   <section class="showcase">
-    <p class="section-label">Vitrine</p>
+    <div class="showcase__header">
+      <div>
+        <p class="section-label">Vitrine de Veículos</p>
+        <h2>Estoque Exclusivo da Concessionária</h2>
+      </div>
+
+      @if (auth.podeGerenciarVeiculos()) {
+        <a routerLink="/veiculos/novo" class="btn-adicionar">
+          ➕ Adicionar Veículo
+        </a>
+      }
+    </div>
 
     <div class="showcase__grid">
-      @for (veiculo of vitrine; track veiculo.nome) {
+      @for (veiculo of veiculos(); track veiculo.id) {
         <article class="showcase__card">
-          <div class="showcase__image"></div>
-          <h3>{{ veiculo.nome }}</h3>
-          <p>{{ veiculo.precoFormatado }}</p>
+          <div class="showcase__image-wrapper">
+            @if (veiculo.imagemUrl) {
+              <img [src]="veiculo.imagemUrl" [alt]="veiculo.modelo" class="showcase__img" />
+            } @else {
+              <div class="showcase__image-placeholder"></div>
+            }
+            <span class="status-badge" [class]="'status-badge--' + veiculo.status">
+              {{ veiculo.status === 'disponivel' ? 'Disponível' : (veiculo.status === 'reservado' ? 'Reservado' : 'Vendido') }}
+            </span>
+          </div>
+
+          <div class="showcase__body">
+            <h3>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.ano }})</h3>
+            <p class="showcase__price">{{ veiculo.preco | currency:'BRL':'symbol':'1.0-0' }}</p>
+            
+            <div class="showcase__details">
+              <span><span>KM:</span> {{ veiculo.quilometragem | number }} km</span>
+              <span><span>Chassi:</span> {{ veiculo.chassi }}</span>
+            </div>
+
+            <p class="showcase__desc">{{ veiculo.descricao }}</p>
+          </div>
+
+          <div class="showcase__actions">
+            <!-- Vendedores e Gerentes podem EDITAR -->
+            @if (auth.podeGerenciarVeiculos()) {
+              <a [routerLink]="['/veiculos', veiculo.id, 'editar']" class="btn-editar">
+                ✏️ Editar
+              </a>
+            }
+
+            <!-- Apenas GERENTES e ADMINS podem EXCLUIR -->
+            @if (auth.podeExcluir()) {
+              <button class="btn-excluir" (click)="excluir(veiculo.id)" title="Excluir Veículo (Apenas Gerente)">
+                🗑️ Excluir
+              </button>
+            }
+          </div>
         </article>
       }
     </div>

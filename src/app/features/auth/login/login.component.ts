@@ -33,6 +33,10 @@ export class LoginComponent {
     return campo.touched && campo.invalid;
   }
 
+  preencherCredenciais(email: string, senha: string): void {
+    this.form.patchValue({ email, senha });
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

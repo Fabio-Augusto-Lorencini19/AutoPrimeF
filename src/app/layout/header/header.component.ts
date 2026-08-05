@@ -1,5 +1,6 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +10,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  public auth = inject(AuthService);
+
   // true quando o usuário já rolou a página, usado para dar fundo sólido ao header
   scrolled = signal(false);
 
@@ -16,4 +19,9 @@ export class HeaderComponent {
   onWindowScroll(): void {
     this.scrolled.set(window.scrollY > 24);
   }
+
+  logout(): void {
+    this.auth.logout();
+  }
 }
+

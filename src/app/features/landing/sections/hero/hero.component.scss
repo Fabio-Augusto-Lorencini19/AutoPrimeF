@@ -35,18 +35,22 @@
 
 .hero__cta {
   background: var(--color-brick);
-  color: #fcebeb;
+  color: #0b0c0e;
+  font-weight: 600;
   border: none;
   padding: 15px 34px;
   font-size: 13px;
   letter-spacing: 0.5px;
   border-radius: 2px;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(197, 160, 89, 0.25);
 }
 
 .hero__cta:hover {
-  opacity: 0.88;
+  background: var(--color-bronze);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
 }
 
 @media (max-width: 720px) {
