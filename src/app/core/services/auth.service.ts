@@ -66,8 +66,8 @@ export class AuthService {
   isAdmin = computed(() => this.isGerente());
   isVendedor = computed(() => this.currentUser()?.cargo === 'vendedor' || this.currentUser()?.papel === 'vendedor');
 
-  // Tanto Vendedores quanto Gerentes podem adicionar e editar veículos no estoque
-  podeGerenciarVeiculos = computed(() => !!this.currentUser());
+  // Tanto Vendedores quanto Gerentes podem adicionar e alterar estoque dos veículos
+  podeGerenciarVeiculos = computed(() => this.isGerente() || this.isVendedor());
 
   // Apenas Gerentes e Administradores podem EXCLUIR registros
   podeExcluir = computed(() => this.isGerente());

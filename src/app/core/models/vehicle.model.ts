@@ -9,7 +9,8 @@ export interface Veiculo {
   quilometragem: number;
   chassi: string;
   status: StatusVeiculo;
-  imagemUrl: string;
+  quantidade: number;
+  imagemUrl?: string;
   combustivel?: string;
   cambio?: string;
   cor?: string;

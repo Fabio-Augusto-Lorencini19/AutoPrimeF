@@ -19,7 +19,7 @@ export class VehicleService {
       quilometragem: 8500,
       chassi: 'WP0ZZZ99ZPS123456',
       status: 'disponivel',
-      imagemUrl: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop',
+      quantidade: 3,
       combustivel: 'Gasolina',
       cambio: 'PDK 8 marchas',
       cor: 'Cinza Nardo',
@@ -35,7 +35,7 @@ export class VehicleService {
       quilometragem: 3200,
       chassi: 'WBS33AY080FP98765',
       status: 'disponivel',
-      imagemUrl: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop',
+      quantidade: 1,
       combustivel: 'Gasolina',
       cambio: 'Automático 8m',
       cor: 'Isle of Man Green',
@@ -51,7 +51,7 @@ export class VehicleService {
       quilometragem: 12000,
       chassi: 'WAUZZZF20NN543210',
       status: 'reservado',
-      imagemUrl: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format&fit=crop',
+      quantidade: 2,
       combustivel: 'Gasolina',
       cambio: 'Tiptronic 8m',
       cor: 'Preto Mythos',
@@ -69,6 +69,23 @@ export class VehicleService {
     return of(veiculo);
   }
 
+  alterarEstoque(id: string, delta: number): Observable<Veiculo | undefined> {
+    if (!this.auth.podeGerenciarVeiculos()) {
+      return throwError(() => new Error('Acesso Negado: Apenas Vendedores e Gerentes podem alterar o estoque.'));
+    }
+
+    this.veiculosInicial.update((lista) =>
+      lista.map((v) => {
+        if (v.id !== id) return v;
+        const novaQtd = Math.max(0, (v.quantidade || 0) + delta);
+        const novoStatus = novaQtd === 0 ? 'vendido' : (v.status === 'vendido' ? 'disponivel' : v.status);
+        return { ...v, quantidade: novaQtd, status: novoStatus };
+      })
+    );
+
+    return this.obterPorId(id);
+  }
+
   criarVeiculo(dados: Omit<Veiculo, 'id'>): Observable<Veiculo> {
     if (!this.auth.podeGerenciarVeiculos()) {
       return throwError(() => new Error('Acesso Negado: Apenas Vendedores e Gerentes podem cadastrar veículos.'));
@@ -76,6 +93,7 @@ export class VehicleService {
 
     const novoVeiculo: Veiculo = {
       ...dados,
+      quantidade: dados.quantidade !== undefined ? dados.quantidade : 1,
       id: String(Date.now())
     };
 
@@ -89,7 +107,14 @@ export class VehicleService {
     }
 
     this.veiculosInicial.update((lista) =>
-      lista.map((v) => (v.id === id ? { ...v, ...dados } : v))
+      lista.map((v) => {
+        if (v.id !== id) return v;
+        const updated = { ...v, ...dados };
+        if (updated.quantidade === 0) {
+          updated.status = 'vendido';
+        }
+        return updated;
+      })
     );
     return this.obterPorId(id);
   }

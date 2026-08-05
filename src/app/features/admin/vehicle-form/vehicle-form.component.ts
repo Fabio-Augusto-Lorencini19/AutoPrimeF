@@ -32,7 +32,7 @@ export class VehicleFormComponent implements OnInit {
     quilometragem: [0, [Validators.required, Validators.min(0)]],
     chassi: ['', [Validators.required, Validators.minLength(5)]],
     status: ['disponivel' as StatusVeiculo, Validators.required],
-    imagemUrl: ['https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop', Validators.required],
+    quantidade: [1, [Validators.required, Validators.min(0)]],
     descricao: ['']
   });
 
@@ -56,7 +56,7 @@ export class VehicleFormComponent implements OnInit {
           quilometragem: veiculo.quilometragem,
           chassi: veiculo.chassi,
           status: veiculo.status,
-          imagemUrl: veiculo.imagemUrl,
+          quantidade: veiculo.quantidade ?? 1,
           descricao: veiculo.descricao || ''
         });
       } else {
@@ -83,7 +83,7 @@ export class VehicleFormComponent implements OnInit {
       quilometragem: Number(val.quilometragem),
       chassi: val.chassi!,
       status: val.status as StatusVeiculo,
-      imagemUrl: val.imagemUrl!,
+      quantidade: Number(val.quantidade ?? 1),
       descricao: val.descricao || ''
     };
 

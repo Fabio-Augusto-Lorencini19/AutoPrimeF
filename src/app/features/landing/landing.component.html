@@ -18,29 +18,35 @@
     </div>
 
     <div class="showcase__grid">
-      @for (veiculo of veiculos(); track veiculo.id) {
+      @for (veiculo of veiculosExibidos(); track veiculo.id) {
         <article class="showcase__card">
-          <div class="showcase__image-wrapper">
-            @if (veiculo.imagemUrl) {
-              <img [src]="veiculo.imagemUrl" [alt]="veiculo.modelo" class="showcase__img" />
-            } @else {
-              <div class="showcase__image-placeholder"></div>
-            }
-            <span class="status-badge" [class]="'status-badge--' + veiculo.status">
-              {{ veiculo.status === 'disponivel' ? 'Disponível' : (veiculo.status === 'reservado' ? 'Reservado' : 'Vendido') }}
-            </span>
-          </div>
-
           <div class="showcase__body">
-            <h3>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.ano }})</h3>
+            <div class="showcase__card-header">
+              <h3>{{ veiculo.marca }} {{ veiculo.modelo }} ({{ veiculo.ano }})</h3>
+              <span class="status-badge" [class]="'status-badge--' + veiculo.status">
+                {{ veiculo.status === 'disponivel' ? 'Disponível' : (veiculo.status === 'reservado' ? 'Reservado' : 'Sem Estoque') }}
+              </span>
+            </div>
             <p class="showcase__price">{{ veiculo.preco | currency:'BRL':'symbol':'1.0-0' }}</p>
             
             <div class="showcase__details">
               <span><span>KM:</span> {{ veiculo.quilometragem | number }} km</span>
-              <span><span>Chassi:</span> {{ veiculo.chassi }}</span>
+              <span><span>Estoque:</span> {{ veiculo.quantidade }} un</span>
             </div>
 
             <p class="showcase__desc">{{ veiculo.descricao }}</p>
+
+            <!-- Apenas VENDEDORES e GERENTES podem alterar a quantidade em estoque -->
+            @if (auth.podeGerenciarVeiculos()) {
+              <div class="showcase__stock-manager">
+                <span class="stock-label">Gerenciar Estoque:</span>
+                <div class="stock-controls">
+                  <button type="button" class="btn-stock" (click)="diminuirEstoque(veiculo.id)" title="Diminuir Estoque">-</button>
+                  <span class="stock-count">{{ veiculo.quantidade }}</span>
+                  <button type="button" class="btn-stock" (click)="aumentarEstoque(veiculo.id)" title="Aumentar Estoque">+</button>
+                </div>
+              </div>
+            }
           </div>
 
           <div class="showcase__actions">
