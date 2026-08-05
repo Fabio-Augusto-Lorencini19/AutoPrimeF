@@ -1,1 +1,70 @@
-<p>register works!</p>
+<div class="login">
+  <div class="login__card">
+    <a routerLink="/" class="login__logo">AutoPrime</a>
+
+    <h1>Criar conta</h1>
+    <p class="login__subtitle">Cadastre-se para acessar o painel de vendas.</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label for="nome">Nome</label>
+      <input
+        id="nome"
+        type="text"
+        formControlName="nome"
+        placeholder="Seu nome completo"
+        [class.input--erro]="campoInvalido('nome')"
+      />
+      @if (campoInvalido('nome')) {
+        <p class="campo-erro">Informe seu nome.</p>
+      }
+
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="seuemail@autoprime.com.br"
+        [class.input--erro]="campoInvalido('email')"
+      />
+      @if (campoInvalido('email')) {
+        <p class="campo-erro">Informe um e-mail válido.</p>
+      }
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        formControlName="senha"
+        placeholder="••••••••"
+        [class.input--erro]="campoInvalido('senha')"
+      />
+      @if (campoInvalido('senha')) {
+        <p class="campo-erro">A senha precisa ter no mínimo 6 caracteres.</p>
+      }
+
+      <label for="confirmarSenha">Confirmar senha</label>
+      <input
+        id="confirmarSenha"
+        type="password"
+        formControlName="confirmarSenha"
+        placeholder="••••••••"
+        [class.input--erro]="campoInvalido('confirmarSenha') || senhasDiferentes"
+      />
+      @if (senhasDiferentes) {
+        <p class="campo-erro">As senhas não coincidem.</p>
+      }
+
+      @if (erro()) {
+        <p class="login__erro-geral">{{ erro() }}</p>
+      }
+
+      <button type="submit" [disabled]="carregando()">
+        {{ carregando() ? 'Criando conta...' : 'Criar conta' }}
+      </button>
+    </form>
+
+    <p class="login__rodape">
+      Já tem uma conta? <a routerLink="/login">Entrar</a>
+    </p>
+  </div>
+</div>
