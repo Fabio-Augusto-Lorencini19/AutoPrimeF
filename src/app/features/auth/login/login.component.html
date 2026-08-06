@@ -40,23 +40,25 @@
     </form>
 
     <div class="login__test-accounts">
-      <p class="login__test-title">💡 Contas de Teste Pré-criadas:</p>
+      <p class="login__test-title">💡 Contas Pré-cadastradas no Banco:</p>
       <div class="login__test-buttons">
-        <button type="button" (click)="preencherCredenciais('gerente@autoprime.com.br', 'gerente123')" class="btn-test btn-test--admin">
-          👑 Gerente (gerente&#64;autoprime.com.br)
+        <button type="button" (click)="preencherCredenciais('joao@gmail.com', '123456')" class="btn-test btn-test--admin">
+          👑 Admin (joao&#64;gmail.com)
         </button>
-        <button type="button" (click)="preencherCredenciais('vendedor@autoprime.com.br', 'vendedor123')" class="btn-test">
-          💼 Vendedor 1 (vendedor&#64;autoprime.com.br)
+        <button type="button" (click)="preencherCredenciais('vendedor@gmail.com', '123456')" class="btn-test">
+          💼 Vendedor (vendedor&#64;gmail.com)
         </button>
-        <button type="button" (click)="preencherCredenciais('joao.vendedor@autoprime.com.br', 'venda123')" class="btn-test">
-          💼 Vendedor 2 (joao.vendedor&#64;autoprime.com.br)
+        <button type="button" (click)="preencherCredenciais('mariano@gmail.com', '123456')" class="btn-test">
+          👤 Cliente (mariano&#64;gmail.com)
         </button>
       </div>
     </div>
 
+    <!--
     <p class="login__rodape">
       Não tem uma conta? <a routerLink="/registro">Criar conta</a>
     </p>
+    -->
   </div>
 </div>
 

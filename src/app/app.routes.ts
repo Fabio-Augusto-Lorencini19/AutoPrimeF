@@ -12,7 +12,7 @@ export const routes: Routes = [
   // Rotas Públicas
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'registro', component: RegisterComponent },
+  { path: 'registro', redirectTo: 'login' },
 
   // Rotas Autenticadas para Vendedores, Gerentes e Admins
   {
