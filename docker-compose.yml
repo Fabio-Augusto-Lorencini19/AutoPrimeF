@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mariadb:10.4
+    container_name: autoprime-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: auto_prime
+      MYSQL_ROOT_PASSWORD: fabio123
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pfabio123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: "../AutoPrime/Auto Prime/app"
+      dockerfile: Dockerfile
+    container_name: autoprime-backend
+    restart: always
+    environment:
+      - spring.datasource.url=jdbc:mariadb://db:3306/auto_prime?allowPublicKeyRetrieval=true&useSSL=false
+      - spring.datasource.username=root
+      - spring.datasource.password=fabio123
+      - DB_PASSWORD=fabio123
+      - JWT_SECRET=AUDI_KEY
+      - JWT_EXPIRATION=3600000
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autoprime-frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
