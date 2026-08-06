@@ -61,8 +61,8 @@ export class RegisterComponent {
     this.erro.set(null);
     this.carregando.set(true);
 
+    /*
     const { nome, email, senha } = this.form.getRawValue();
-
     this.auth.registrar({ nome: nome!, email: email!, senha: senha! }).subscribe({
       next: () => {
         this.carregando.set(false);
@@ -73,5 +73,8 @@ export class RegisterComponent {
         this.erro.set(erro.message);
       }
     });
+    */
+    this.carregando.set(false);
+    this.erro.set('O registro de novos usuários está desativado. Utilize uma das contas de teste na tela de login.');
   }
 }

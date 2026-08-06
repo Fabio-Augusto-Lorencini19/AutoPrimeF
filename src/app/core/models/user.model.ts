@@ -1,4 +1,4 @@
-export type Cargo = 'gerente' | 'vendedor' | 'admin';
+export type Cargo = 'gerente' | 'vendedor' | 'admin' | 'cliente';
 export type Papel = Cargo;
 
 export interface Usuario {
