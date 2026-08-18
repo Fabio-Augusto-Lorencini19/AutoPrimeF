@@ -100,7 +100,7 @@ jobs:
       - name: 📤 Build e Push da Imagem para o Registry (GHCR)
         uses: docker/build-push-action@v5
         with:
-          context: "./Auto Prime/frontend"
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
