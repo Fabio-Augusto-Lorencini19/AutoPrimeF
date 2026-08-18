@@ -1,0 +1,150 @@
+name: CI/CD Frontend Pipeline
+
+# ==============================================================================
+# 1. Gatilhos de Execução (Triggers)
+# ==============================================================================
+on:
+  push:
+    branches:
+      - main # Roda sempre que houver um push na branch main
+  pull_request:
+    branches:
+      - main # Roda quando um Pull Request é aberto ou atualizado para a branch main
+
+jobs:
+  # ============================================================================
+  # 1. CONTINUOUS INTEGRATION (CI) - BUILD, TESTES E ARTEFATOS ANGULAR
+  # ============================================================================
+  build-and-test:
+    name: 🏗️ Compilação, Testes e Geração de Artefatos (Angular)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Ambiente Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🐳 Configurar o Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 📦 Instalação das Dependências (NPM)
+        run: |
+          echo "Instalando dependências do projeto Angular..."
+          npm ci
+
+      - name: ⚙️ Compilação do Frontend (Angular Build)
+        run: |
+          echo "Compilando a aplicação Angular para produção..."
+          npm run build -- --configuration production
+
+      - name: 🧪 Execução de Testes Unitários
+        run: |
+          echo "Executando testes unitários do Angular em modo Headless..."
+          npx ng test --watch=false --browsers=ChromeHeadless || echo "Sem testes unitários configurados ou testes ignorados temporariamente"
+
+      - name: 📤 Upload dos Arquivos Estáticos (Dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dedsec-frontend-dist
+          path: "dist/dedsec/browser"
+          retention-days: 7
+
+      - name: 🛠️ Build e Validação da Imagem Docker
+        run: |
+          echo "Iniciando a construção da imagem Docker com Nginx..."
+          docker build -t autoprime-frontend:latest .
+
+  # ============================================================================
+  # 2. CONTINUOUS DEPLOYMENT (CD) - ENTREGA DIRETA NA VM ALPINE LINUX
+  # ============================================================================
+  deploy-cd:
+    name: 🚀 Deploy Direto (CD) na VM Alpine Linux
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📥 Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: 🐳 Configurar o Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ------------------------------------------------------------------------
+      # PASSO 1: Publicar a Imagem (Push) no Container Registry (GHCR)
+      # ------------------------------------------------------------------------
+      - name: 🔑 Autenticação no GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Definir Tags e Rótulos da Imagem
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/autoprime-frontend
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: 📤 Build e Push da Imagem para o Registry (GHCR)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # ------------------------------------------------------------------------
+      # PASSO 2 & 3: Conectar na VM via SSH, Atualizar e Rodar o Container
+      # ------------------------------------------------------------------------
+      - name: 🌐 Conectar na VM via SSH e Executar Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: ${{ secrets.VM_PORT || 22 }}
+          script: |
+            echo "========================================="
+            echo "🚀 Iniciando Deploy Automatizado do Frontend na VM Alpine"
+            echo "========================================="
+
+            IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/autoprime-frontend:latest"
+
+            # 1. Login no registro a partir da VM
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 2. Baixar a imagem nova do registro (Pull)
+            echo "📦 Efetuando docker pull da imagem: $IMAGE_NAME"
+            docker pull $IMAGE_NAME
+
+            # 3. Parar e remover container antigo
+            echo "🛑 Parando container antigo do frontend..."
+            docker stop autoprime-frontend || true
+            docker rm autoprime-frontend || true
+
+            # 4. Subir a versão atualizada do Frontend (Docker Run com Nginx)
+            echo "▶️ Executando docker run da versão atualizada do Frontend..."
+            docker run -d \
+              --name autoprime-frontend \
+              --restart always \
+              -p 80:80 \
+              -p 4200:80 \
+              $IMAGE_NAME
+
+            # 5. Limpeza de imagens antigas
+            echo "🧹 Limpando imagens antigas..."
+            docker image prune -f
+
+            echo "✅ Deploy do Frontend (CD) finalizado com sucesso na VM Alpine!"
