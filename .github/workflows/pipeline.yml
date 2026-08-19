@@ -9,7 +9,7 @@ on:
       - main # Roda sempre que houver um push na branch main
   pull_request:
     branches:
-      - main # Roda quando um Pull Request é aberto ou atualizado para a branch main
+      - main # Roda quando um Pull Request é aberto ou atualizado
 
 jobs:
   # ============================================================================
@@ -23,10 +23,11 @@ jobs:
       - name: 📥 Checkout do Código
         uses: actions/checkout@v4
 
-      - name: 🟢 Configurar Ambiente Node.js 20
+      # Atualizado para Node 22 para evitar os avisos de depreciação do GitHub
+      - name: 🟢 Configurar Ambiente Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: 🐳 Configurar o Docker Buildx
@@ -88,11 +89,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Substituí o ${{ github.repository_owner }} pelo seu nome fixo em minúsculas
+      # para evitar que o Docker recuse o formato por causa das letras maiúsculas.
       - name: 🏷️ Definir Tags e Rótulos da Imagem
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/autoprime-frontend
+          images: ghcr.io/fabio-augusto-lorencini19/autoprime-frontend
           tags: |
             type=raw,value=latest
             type=sha,format=short
@@ -116,11 +119,15 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           port: ${{ secrets.VM_PORT || 22 }}
           script: |
+            # REGRA DE SEGURANÇA: Se um comando falhar, aborte imediatamente!
+            set -e
+
             echo "========================================="
             echo "🚀 Iniciando Deploy Automatizado do Frontend na VM Alpine"
             echo "========================================="
 
-            IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/autoprime-frontend:latest"
+            # Letras estritamente minúsculas novamente
+            IMAGE_NAME="ghcr.io/fabio-augusto-lorencini19/autoprime-frontend:latest"
 
             # 1. Login no registro a partir da VM
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -134,13 +141,12 @@ jobs:
             docker stop autoprime-frontend || true
             docker rm autoprime-frontend || true
 
-            # 4. Subir a versão atualizada do Frontend (Docker Run com Nginx)
+            # 4. Subir a versão atualizada do Frontend (Apenas porta 80)
             echo "▶️ Executando docker run da versão atualizada do Frontend..."
             docker run -d \
               --name autoprime-frontend \
               --restart always \
               -p 80:80 \
-              -p 4200:80 \
               $IMAGE_NAME
 
             # 5. Limpeza de imagens antigas
