@@ -92,7 +92,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/app/Dedsec/dist
+          images: ghcr.io/${{ github.repository_owner }}/autoprime-frontend
           tags: |
             type=raw,value=latest
             type=sha,format=short
@@ -120,7 +120,7 @@ jobs:
             echo "🚀 Iniciando Deploy Automatizado do Frontend na VM Alpine"
             echo "========================================="
 
-            IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/app/Dedsec/dist:latest"
+            IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/autoprime-frontend:latest"
 
             # 1. Login no registro a partir da VM
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -131,13 +131,13 @@ jobs:
 
             # 3. Parar e remover container antigo
             echo "🛑 Parando container antigo do frontend..."
-            docker stop /app/Dedsec/dist || true
-            docker rm /app/Dedsec/dist || true
+            docker stop autoprime-frontend || true
+            docker rm autoprime-frontend || true
 
             # 4. Subir a versão atualizada do Frontend (Docker Run com Nginx)
             echo "▶️ Executando docker run da versão atualizada do Frontend..."
             docker run -d \
-              --name /app/Dedsec/dist \
+              --name autoprime-frontend \
               --restart always \
               -p 80:80 \
               -p 4200:80 \
